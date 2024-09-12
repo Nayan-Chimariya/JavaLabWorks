@@ -58,7 +58,7 @@ public class q2_customException {
             System.out.println("An error occurred: " + ex.getMessage());
         }
 
-        System.out.println("\nCustom Checked Exception\n");
+        System.out.println("\nCustom Runtime Exception\n");
 
         System.out.println("Enter a mark (0-100): ");
         int mark = scanner.nextInt();
