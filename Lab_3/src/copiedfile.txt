@@ -1,0 +1,2 @@
+This is the content of the original file
+that is to be copied.
