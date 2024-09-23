@@ -1,10 +1,7 @@
-import java.io.FileWriter;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.Scanner;
 
-class User {
+class User implements Serializable {
     String id;
     String name;
     String email;
@@ -14,10 +11,6 @@ class User {
         this.name = name;
         this.email = email;
     }
-
-    public String GetData() {
-        return "ID = " + id + " " + "Name = " + name + " " + "Email = " + email;
-    }
 }
 
 public class Q2WriteObjects {
@@ -25,10 +18,12 @@ public class Q2WriteObjects {
     public static void addUsers() {
         Scanner scanner = new Scanner(System.in);
 
-        try (FileWriter fileWriter = new FileWriter("users.txt", true)) {
+        try (FileOutputStream fos = new FileOutputStream("users.dat", true);
+             ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(fos))) {
+
             for (int i = 0; i < 5; i++) {
                 System.out.println("\nEnter details for User " + (i + 1) + ":");
-                System.out.print("\nID: ");
+                System.out.print("ID: ");
                 String id = scanner.next();
                 scanner.nextLine();
                 System.out.print("Name: ");
@@ -38,7 +33,7 @@ public class Q2WriteObjects {
 
                 User user = new User(id, name, email);
 
-                fileWriter.write(user.GetData() + "\n");
+                oos.writeObject(user);
             }
 
             System.out.println("\nUser details saved to file successfully!\n");
@@ -48,13 +43,20 @@ public class Q2WriteObjects {
     }
 
     public static void displayUsers() {
-
-        try (BufferedReader bufferedReader = new BufferedReader(new FileReader("users.txt"))) {
-            String line;
+        try (FileInputStream fis = new FileInputStream("users.dat");
+             ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(fis))) {
 
             System.out.println("\nStored User Data:\n");
-            while ((line = bufferedReader.readLine()) != null) {
-                System.out.println(line);
+
+            while (true) {
+                try {
+                    User user = (User) ois.readObject();
+                    System.out.println("ID = " + user.id + " | Name = " + user.name + " | Email = " + user.email);
+                } catch (EOFException e) {
+                    break;
+                } catch (ClassNotFoundException e) {
+                    System.out.println("Class not found: " + e.getMessage());
+                }
             }
         } catch (IOException e) {
             System.out.println("Error reading from file: " + e.getMessage());
