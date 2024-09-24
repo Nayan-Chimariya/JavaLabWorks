@@ -1,14 +1,24 @@
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 class MySharedResource {
     public synchronized void myResource(String threadName) {
-        System.out.println(threadName + " has entered the resource.");
+        String entryTime = getCurrentTime();
+        System.out.println("(" + entryTime + ") " + threadName + " has entered the resource.");
 
         try {
-            Thread.sleep(1000);
+            Thread.sleep(1000); // Simulate some work
         } catch (InterruptedException e) {
             System.out.println(e.getMessage());
         }
 
-        System.out.println(threadName + " is leaving the resource.");
+        String exitTime = getCurrentTime();
+        System.out.println("(" + exitTime + ") " + threadName + " is leaving the resource.");
+    }
+
+    private String getCurrentTime() {
+        SimpleDateFormat formatter = new SimpleDateFormat("mm:ss");
+        return formatter.format(new Date());
     }
 }
 
@@ -29,7 +39,6 @@ class MyThread extends Thread {
 
 public class Q2SharedResources {
     public static void main(String[] args) {
-
         MySharedResource sharedResource = new MySharedResource();
 
         MyThread t1 = new MyThread(sharedResource, "Thread 1");
@@ -39,6 +48,5 @@ public class Q2SharedResources {
         t1.start();
         t2.start();
         t3.start();
-
     }
 }
