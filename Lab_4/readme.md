@@ -9,8 +9,11 @@
 3. Write a program to create a package in java.
 
 <hr>
+
 *Note: For Question 3*
+
 <hr>
+
 **Compilation of package**
 
 Use the following command to compile the java file,<br>
