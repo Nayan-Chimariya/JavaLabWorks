@@ -13,15 +13,32 @@ class User implements Serializable {
     }
 }
 
+class AppendableObjectOutputStream extends ObjectOutputStream {
+    // Constructor that does not write a header when appending
+    public AppendableObjectOutputStream(OutputStream out) throws IOException {
+        super(out);
+    }
+
+    @Override
+    protected void writeStreamHeader() throws IOException {
+        // Skip writing a header when appending
+        reset();
+    }
+}
+
 public class Q2WriteObjects {
+
+    private static final String FILE_NAME = "users.dat";
 
     public static void addUsers() {
         Scanner scanner = new Scanner(System.in);
 
-        try (FileOutputStream fos = new FileOutputStream("users.dat", true);
-             ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(fos))) {
+        try (FileOutputStream fos = new FileOutputStream(FILE_NAME, true);
+             ObjectOutputStream oos = isFileEmpty()
+                     ? new ObjectOutputStream(fos) // First time, write the header
+                     : new AppendableObjectOutputStream(fos)) { // Append mode, skip the header
 
-            for (int i = 0; i < 5; i++) {
+            for (int i = 0; i < 3; i++) {
                 System.out.println("\nEnter details for User " + (i + 1) + ":");
                 System.out.print("ID: ");
                 String id = scanner.next();
@@ -32,19 +49,19 @@ public class Q2WriteObjects {
                 String email = scanner.nextLine();
 
                 User user = new User(id, name, email);
-
-                oos.writeObject(user);
+                oos.writeObject(user); // Append user to the file
             }
 
             System.out.println("\nUser details saved to file successfully!\n");
+
         } catch (IOException e) {
             System.out.println("Error writing to file: " + e.getMessage());
         }
     }
 
     public static void displayUsers() {
-        try (FileInputStream fis = new FileInputStream("users.dat");
-             ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(fis))) {
+        try (FileInputStream fis = new FileInputStream(FILE_NAME);
+             ObjectInputStream ois = new ObjectInputStream(fis)) {
 
             System.out.println("\nStored User Data:\n");
 
@@ -53,6 +70,7 @@ public class Q2WriteObjects {
                     User user = (User) ois.readObject();
                     System.out.println("ID = " + user.id + " | Name = " + user.name + " | Email = " + user.email);
                 } catch (EOFException e) {
+                    // End of file reached
                     break;
                 } catch (ClassNotFoundException e) {
                     System.out.println("Class not found: " + e.getMessage());
@@ -61,6 +79,12 @@ public class Q2WriteObjects {
         } catch (IOException e) {
             System.out.println("Error reading from file: " + e.getMessage());
         }
+    }
+
+    // Helper method to check if the file is empty or not
+    private static boolean isFileEmpty() {
+        File file = new File(Q2WriteObjects.FILE_NAME);
+        return !file.exists() || file.length() == 0;
     }
 
     public static void main(String[] args) {
