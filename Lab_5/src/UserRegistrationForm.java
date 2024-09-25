@@ -135,6 +135,10 @@ public class UserRegistrationForm {
                         country = "Not Selected";
                     }
 
+                    if (address.isBlank()) {
+                        address = "Not Filled";
+                    }
+
                     ArrayList<String> hobbiesList = new ArrayList<>();
                     if (coding.isSelected()) hobbiesList.add("Coding");
                     if (watchingMovies.isSelected()) hobbiesList.add("Watching Movies");
