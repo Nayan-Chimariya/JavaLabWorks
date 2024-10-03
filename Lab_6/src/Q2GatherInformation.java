@@ -35,7 +35,7 @@ public class Q2GatherInformation {
 
         String DB_URL = "jdbc:mysql://localhost:3306/students";
         String USER = "root";
-        String PASSWORD = "nayanchimariya";
+        String PASSWORD = System.getenv("PASSWORD");
 
         Connection conn = null;
 
